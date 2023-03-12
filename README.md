@@ -126,6 +126,6 @@ nohup ./openai-on-wechat &
 
 # 联系作者
 
-- 本项目地址为： https://github.com/zhayujie/chatgpt-on-wechat ，欢迎大家 Star，提交 PR
+- 本项目地址为： https://github.com/riba2534/openai-on-wechat ，欢迎大家 Star，提交 PR
 - 有问题可以在本项目下提 `Issues` 或者发邮件到 `riba2534@qq.com`
 
