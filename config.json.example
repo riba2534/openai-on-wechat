@@ -1,0 +1,19 @@
+{
+    "author": "孙悟空",
+    "wechat": {
+        "text_config": {
+            "openapi_url": "https://api.openai.com/v1",
+            "auth_token": "你在 OpenAI 官网的 Token",
+            "trigger_prefix": "小孙"
+        },
+        "image_config": {
+            "openapi_url": "https://api.openai.com/v1",
+            "auth_token": "你在 OpenAI 官网的 Token",
+            "trigger_prefix": "老孙"
+        }
+    }.
+    "context_config": {
+        "switch_on": true,
+        "cache_minute": 3
+    }
+}
