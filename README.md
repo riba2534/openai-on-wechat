@@ -1,6 +1,7 @@
 # 1分钟搭建自己的OpenAI GPT微信机器人
 
 > 项目地址: https://github.com/riba2534/openai-on-wechat
+> 
 > 知乎: https://zhuanlan.zhihu.com/p/613440196
 
 # 简介
