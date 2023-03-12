@@ -10,7 +10,7 @@
             "auth_token": "你在 OpenAI 官网的 Token",
             "trigger_prefix": "老贺"
         }
-    }.
+    },
     "context_config": {
         "switch_on": true,
         "cache_minute": 3

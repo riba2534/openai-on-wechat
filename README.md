@@ -38,7 +38,7 @@
 
 ## 二、 配置
 
-1. 首先需要在本项目的 [Releases](https://github.com/riba2534/openai-on-wechat/releases) 中找到最新的二进制文件版本并下载，目前最新的地址是： [openai-on-wechat.zip](https://github.com/riba2534/openai-on-wechat/releases/download/V1.0/openai-on-wechat.zip)
+1. 首先需要在本项目的 [Releases](https://github.com/riba2534/openai-on-wechat/releases) 中找到最新的二进制文件版本并下载，目前最新的地址是： [openai-on-wechat.zip](https://github.com/riba2534/openai-on-wechat/releases/download/V1.1/openai-on-wechat.zip)
 2. 把 `openai-on-wechat.zip` 文件传输至你的云服务器的任意目录下
 3. 使用 `unzip openai-on-wechat.zip` 把压缩包解压到当前目录下
 
@@ -65,7 +65,7 @@
             "auth_token": "你在 OpenAI 官网的 Token",
             "trigger_prefix": "老贺"
         }
-    }.
+    },
     "context_config": {
         "switch_on": true,
         "cache_minute": 3
