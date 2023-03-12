@@ -4,3 +4,4 @@ token.json
 config.json
 prompt.txt
 openai-on-wechat.zip
+.DS_Store
