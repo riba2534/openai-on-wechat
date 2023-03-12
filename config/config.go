@@ -1,18 +1,38 @@
 package config
 
 import (
+	"io/ioutil"
 	"log"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/riba2534/openai-on-wechat/utils"
-	"github.com/spf13/viper"
 )
 
-var C Config
+var C *Config
+var Prompt string
 
 type Config struct {
-	Author        string        `json:"author"`
-	WechatConfig  WechatConfig  `json:"wechat_config"`
-	ContextConfig ContextConfig `json:"context_config"`
+	WechatConfig  *WechatConfig  `json:"wechat_config"`
+	ContextConfig *ContextConfig `json:"context_config"`
+}
+
+func (c *Config) checkParam() bool {
+	if c.WechatConfig == nil || c.ContextConfig == nil {
+		return false
+	}
+	if c.WechatConfig.TextConfig == nil || c.WechatConfig.ImageConfig == nil {
+		return false
+	}
+	if c.WechatConfig.TextConfig.OpenApiUrl == "" || c.WechatConfig.TextConfig.AuthToken == "" || c.WechatConfig.TextConfig.TriggerPrefix == "" {
+		return false
+	}
+	if c.WechatConfig.ImageConfig.OpenApiUrl == "" || c.WechatConfig.ImageConfig.AuthToken == "" || c.WechatConfig.ImageConfig.TriggerPrefix == "" {
+		return false
+	}
+	if c.ContextConfig.CacheMinute <= 0 {
+		return false
+	}
+	return true
 }
 
 type AuthConfig struct {
@@ -22,8 +42,8 @@ type AuthConfig struct {
 }
 
 type WechatConfig struct {
-	TextConfig  AuthConfig `json:"text_config"`
-	ImageConfig AuthConfig `json:"image_config"`
+	TextConfig  *AuthConfig `json:"text_config"`
+	ImageConfig *AuthConfig `json:"image_config"`
 }
 
 type ContextConfig struct {
@@ -32,22 +52,24 @@ type ContextConfig struct {
 }
 
 func Init() {
-	// 设置配置文件名和路径
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	// 设置配置文件类型为 JSON
-	viper.SetConfigType("json")
-	// 读取配置文件
-	err := viper.ReadInConfig()
+	// 1. 读取 `config.json``
+	data, err := ioutil.ReadFile("config.json")
 	if err != nil {
-		log.Fatalf("读取配置失败，请检查配置文件 `config.json` 的配置, 错误信息: %+v\n", err)
-		return
+		log.Fatalf("读取配置文件失败，请检查配置文件 `config.json` 的配置, 错误信息: %+v\n", err)
 	}
-	// 将配置绑定到指定结构体上
-	err = viper.Unmarshal(&C)
+	config := Config{}
+	if err = jsoniter.Unmarshal(data, &config); err != nil {
+		log.Fatalf("读取配置文件失败，请检查配置文件 `config.json` 的格式, 错误信息: %+v\n", err)
+	}
+	if !config.checkParam() {
+		log.Fatal("配置文件校验失败，请检查 `config.json`")
+	}
+	C = &config
+	// 2. 读取 prompt.txt
+	prompt, err := ioutil.ReadFile("prompt.txt")
 	if err != nil {
-		log.Fatalf("读取配置失败，请检查配置文件 `config.json` 的配置, 错误信息: %+v\n", err)
-		return
+		log.Fatalf("读取配置文件失败，请检查配置文件 `prompt.txt` 的配置, 错误信息: %+v\n", err)
 	}
-	log.Printf("配置加载成功, `config.json` is %s", utils.MarshalAnyToString(C))
+	Prompt = string(prompt)
+	log.Printf("配置加载成功, `config.json` is \n%s\n`prompt.txt` is \n%s\n", utils.MarshalAnyToString(C), Prompt)
 }
