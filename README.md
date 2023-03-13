@@ -56,7 +56,7 @@
 
 ```json
 {
-    "wechat": {
+    "wechat_config": {
         "text_config": {
             "openapi_url": "https://api.openai.com/v1",
             "auth_token": "你在 OpenAI 官网的 Token",
