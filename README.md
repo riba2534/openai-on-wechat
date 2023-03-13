@@ -36,7 +36,7 @@
 - OpenAI 账号 以及生成的 `SECRET KEY` ，本文对账号注册以及 key 生成不做赘述，读者请自行搜索解决方案。
 - 一个微信账号
 
-> 注：OpenAI 的域名 `httops://api.openai.com` 在国内由于某种原因可能无法访问，读者需要自己解决 API 访问不通的问题。介绍一种简单的国内代理搭建方式，大家可以参考我的知乎专栏： [腾讯云函数1分钟搭建 OpenAI 国内代理](https://zhuanlan.zhihu.com/p/612576046)
+> 注：OpenAI 的域名 `https://api.openai.com` 在国内由于某种原因可能无法访问，读者需要自己解决 API 访问不通的问题。介绍一种简单的国内代理搭建方式，大家可以参考我的知乎专栏： [腾讯云函数1分钟搭建 OpenAI 国内代理](https://zhuanlan.zhihu.com/p/612576046)
 
 ## 二、 配置
 
