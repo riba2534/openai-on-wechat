@@ -17,6 +17,6 @@ func Init() error {
 }
 
 func consoleQrCode(uuid string) {
-	q, _ := qrcode.New("https://login.weixin.qq.com/l/"+uuid, qrcode.Low)
-	fmt.Println(q.ToString(true))
+	q, _ := qrcode.New("https://login.weixin.qq.com/l/"+uuid, qrcode.Highest)
+	fmt.Println(q.ToSmallString(true))
 }

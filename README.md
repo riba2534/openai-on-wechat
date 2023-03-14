@@ -3,6 +3,8 @@
 > 项目地址: https://github.com/riba2534/openai-on-wechat
 > 
 > 知乎: https://zhuanlan.zhihu.com/p/613440196
+> 
+> 本项目会持续迭代，下载二进制包时请去 [releases](https://github.com/riba2534/openai-on-wechat/releases) 中找最新的 `openai-on-wechat.zip` 下载
 
 # 简介
 
