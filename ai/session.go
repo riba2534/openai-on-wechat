@@ -3,10 +3,10 @@ package ai
 import (
 	"context"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/riba2534/openai-on-wechat/config"
+	"github.com/riba2534/openai-on-wechat/consts"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -77,9 +77,9 @@ func GetSessionOpenAITextReply(q, user string) string {
 	)
 	if err != nil {
 		log.Printf("openAIClient.CreateChatCompletion err=%+v\n", err)
-		return "抱歉，出错了，请稍后重试~"
+		return consts.ErrTips
 	}
-	reply := strings.TrimSpace(resp.Choices[0].Message.Content)
+	reply := chatCompletionResponseHandle(resp)
 	// 4. 把回复添加进上下文
 	chat.Add(NewUserMessage(user, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleAssistant,

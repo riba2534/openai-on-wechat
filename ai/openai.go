@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/riba2534/openai-on-wechat/config"
+	"github.com/riba2534/openai-on-wechat/consts"
+	"github.com/riba2534/openai-on-wechat/utils"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -46,9 +48,9 @@ func GetOpenAITextReply(q string) string {
 	)
 	if err != nil {
 		log.Printf("openAIClient.CreateChatCompletion err=%+v\n", err)
-		return "抱歉，出错了，请稍后重试~"
+		return consts.ErrTips
 	}
-	return strings.TrimSpace(resp.Choices[0].Message.Content)
+	return chatCompletionResponseHandle(resp)
 }
 
 func CreateImage(q string) string {
@@ -65,4 +67,13 @@ func CreateImage(q string) string {
 		return ""
 	}
 	return resp.Data[0].URL
+}
+
+// 处理文本生成接口返回数据
+func chatCompletionResponseHandle(resp openai.ChatCompletionResponse) string {
+	if len(resp.Choices) == 0 {
+		log.Printf("resp is err, resp=%s", utils.MarshalAnyToString(resp))
+		return consts.ErrTips
+	}
+	return strings.TrimSpace(resp.Choices[0].Message.Content)
 }

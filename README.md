@@ -131,3 +131,8 @@ nohup ./openai-on-wechat &
 - 本项目地址为： https://github.com/riba2534/openai-on-wechat ，欢迎大家 Star，提交 PR
 - 有问题可以在本项目下提 `Issues` 或者发邮件到 `riba2534@qq.com`
 
+建了`QQ群`和`微信群`，大家可以进群交流:
+
+| ![qq群](docs/qq群.jpg) | ![微信群](docs/微信群.jpg) |
+| ---------------------- | -------------------------- |
+

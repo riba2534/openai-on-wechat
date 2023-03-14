@@ -8,6 +8,7 @@ import (
 
 	"github.com/riba2534/openai-on-wechat/ai"
 	"github.com/riba2534/openai-on-wechat/config"
+	"github.com/riba2534/openai-on-wechat/consts"
 	"github.com/riba2534/openwechat"
 )
 
@@ -32,7 +33,7 @@ func MessageHandler(msg *openwechat.Message) {
 // 文字回复
 func textReplyHandler(msg *openwechat.Message) {
 	log.Printf("[text] Request: %s", msg.Content) // 输出请求消息到日志
-	reply := ai.GetOpenAITextReply(strings.TrimSpace(msg.Content))
+	reply := ai.GetOpenAITextReply(strings.TrimSpace(strings.TrimPrefix(msg.Content, config.C.WechatConfig.TextConfig.TriggerPrefix)))
 	log.Printf("[text] Response: %s", reply) // 输出回复消息到日志
 	_, err := msg.ReplyText(reply)
 	if err != nil {
@@ -50,7 +51,7 @@ func textSessionReplyHandler(msg *openwechat.Message) {
 		}
 		return s
 	}()
-	reply := ai.GetSessionOpenAITextReply(strings.TrimSpace(msg.Content), user)
+	reply := ai.GetSessionOpenAITextReply(strings.TrimSpace(strings.TrimPrefix(msg.Content, config.C.WechatConfig.TextConfig.TriggerPrefix)), user)
 	log.Printf("[text] Response: %s", reply) // 输出回复消息到日志
 	_, err := msg.ReplyText(reply)
 	if err != nil {
@@ -64,14 +65,14 @@ func imageReplyHandler(msg *openwechat.Message) {
 	url := ai.CreateImage(strings.TrimSpace(strings.TrimPrefix(msg.Content, config.C.WechatConfig.ImageConfig.TriggerPrefix)))
 	if url == "" {
 		log.Printf("[image] Response: url 为空")
-		msg.ReplyText("抱歉，出错了，请稍后重试~")
+		msg.ReplyText(consts.ErrTips)
 		return
 	}
 	log.Printf("[image] Response: url = %s", url)
 	image, err := downloadImage(url)
 	if err != nil {
 		log.Printf("[image] downloadImage err, err=%+v", err)
-		msg.ReplyText("抱歉，出错了，请稍后重试~")
+		msg.ReplyText(consts.ErrTips)
 		return
 	}
 	_, err = msg.ReplyImage(image)
