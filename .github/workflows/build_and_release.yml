@@ -28,37 +28,45 @@ jobs:
 
       - name: Build
         if: ${{ !matrix.skip }}
-        shell: bash
+        shell: pwsh
         run: |
-          export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
-          if [[ "${GOOS}" == "ubuntu" ]]; then
-            export GOOS=linux
-          elif [[ "${GOOS}" == "macos" ]]; then
-            export GOOS=darwin
-          fi
-          export GOARCH=${{ matrix.arch }}
-          export GOARM=7 # Set GOARM value if you need to build for ARMv7
-          export BINARY_NAME=openai-on-wechat-${GOOS}-${GOARCH}
-          if [[ "${GOOS}" == "windows" ]]; then
-            export BINARY_NAME=${BINARY_NAME}.exe
-          fi
-          go build -o ${BINARY_NAME}
+          $GOOS = (echo "${{ matrix.os }}" | ForEach-Object { $_.split('-')[0] })
+
+          if ($GOOS -eq "ubuntu") {
+              $GOOS = "linux"
+          } elseif ($GOOS -eq "macos") {
+              $GOOS = "darwin"
+          }
+
+          $GOARCH = "${{ matrix.arch }}"
+          $BINARY_NAME = "openai-on-wechat-$GOOS-$GOARCH"
+
+          if ($GOOS -eq "windows") {
+              $BINARY_NAME = "$BINARY_NAME.exe"
+          }
+
+          go build -o $BINARY_NAME
 
       - name: Zip artifacts
         if: ${{ !matrix.skip }}
+        shell: pwsh
         run: |
-          export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
-          if [[ "${GOOS}" == "ubuntu" ]]; then
-            export GOOS=linux
-          elif [[ "${GOOS}" == "macos" ]]; then
-            export GOOS=darwin
-          fi
-          export GOARCH=${{ matrix.arch }}
-          export BINARY_NAME=openai-on-wechat-${GOOS}-${GOARCH}
-          if [[ "${GOOS}" == "windows" ]]; then
-            export BINARY_NAME=${BINARY_NAME}.exe
-          fi
-          zip ${BINARY_NAME}.zip ${BINARY_NAME} config.json.example prompt.txt.example
+          $GOOS = (echo "${{ matrix.os }}" | ForEach-Object { $_.split('-')[0] })
+
+          if ($GOOS -eq "ubuntu") {
+              $GOOS = "linux"
+          } elseif ($GOOS -eq "macos") {
+              $GOOS = "darwin"
+          }
+
+          $GOARCH = "${{ matrix.arch }}"
+          $BINARY_NAME = "openai-on-wechat-$GOOS-$GOARCH"
+
+          if ($GOOS -eq "windows") {
+              $BINARY_NAME = "$BINARY_NAME.exe"
+          }
+
+          Compress-Archive -Path $BINARY_NAME, "config.json.example", "prompt.txt.example" -DestinationPath "$BINARY_NAME.zip"
 
       - name: Upload Artifacts
         if: ${{ !matrix.skip }}
