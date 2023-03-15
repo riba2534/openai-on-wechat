@@ -26,9 +26,9 @@
 
  先看使用效果，之后再介绍如何部署以及配置。下图包含了**连续对话**和**文本画图**的一些例子：
 
-| ![连续对话1.jpg](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/12/640dd478ddca6.jpg) | ![连续对话2.jpg](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/12/640dd47782e95.jpg) | ![文字3.jpeg](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/12/640dd6d26b6b9.jpeg) |
+| ![连续对话1.jpg](docs/连续对话1.jpg) | ![连续对话2.jpg](docs/连续对话2.jpg) | ![文字3.jpeg](docs/文字3.jpeg) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![画图2.jpg](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/12/640dd477ea8be.jpg) | ![画图3.jpg](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/12/640dd478bf6dd.jpg) | ![画图1.jpg](https://image-1252109614.cos.ap-beijing.myqcloud.com/2023/03/12/640dd4794bfea.jpg) |
+| ![画图2.jpg](docs/画图2.jpg) | ![画图3.jpg](docs/画图3.jpg) | ![画图1.jpg](docs/画图1.jpg) |
 
 # 开始部署
 
