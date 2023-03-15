@@ -28,6 +28,7 @@ jobs:
 
       - name: Build
         if: ${{ !matrix.skip }}
+        shell: bash
         run: |
           export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
           if [[ "${GOOS}" == "ubuntu" ]]; then
