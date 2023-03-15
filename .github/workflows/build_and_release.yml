@@ -1,0 +1,78 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "V*.*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: [1.18.x]
+        arch: [amd64, arm64]
+        include:
+          - os: windows-latest
+            arch: arm64
+            skip: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Build
+        if: ${{ !matrix.skip }}
+        run: |
+          export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
+          export GOARCH=${{ matrix.arch }}
+          export GOARM=7 # Set GOARM value if you need to build for ARMv7
+          export BINARY_NAME=openai-on-wechat-${GOOS}-${GOARCH}
+          if [[ "${GOOS}" == "windows" ]]; then
+            export BINARY_NAME=${BINARY_NAME}.exe
+          fi
+          go build -o ${BINARY_NAME}
+
+      - name: Zip artifacts
+        if: ${{ !matrix.skip }}
+        run: |
+          export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
+          export GOARCH=${{ matrix.arch }}
+          export BINARY_NAME=openai-on-wechat-${GOOS}-${GOARCH}
+          if [[ "${GOOS}" == "windows" ]]; then
+            export BINARY_NAME=${BINARY_NAME}.exe
+          fi
+          zip ${BINARY_NAME}.zip ${BINARY_NAME} config.json.example prompt.txt.example
+
+      - name: Upload Artifacts
+        if: ${{ !matrix.skip }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: openai-on-wechat-${{ matrix.os }}-${{ matrix.arch }}.zip
+          path: |
+            *.zip
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: "startsWith(github.ref, 'refs/tags/v')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ./artifacts
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "artifacts/*.zip"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
