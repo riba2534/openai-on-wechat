@@ -95,11 +95,14 @@ jobs:
       - name: Recompress Artifacts
         run: |
           mkdir -p recompressed
-          for dir in ./artifacts/*; do
-            if [ -d "$dir" ]; then
-              base=$(basename "$dir")
-              zip -j "recompressed/$base" "$dir"/*
-            fi
+          for artifact_dir in ./artifacts/*/; do
+            dir_name=$(basename $artifact_dir)
+            zip_name="${dir_name}.zip"
+            unzip "${artifact_dir}${zip_name}" -d "./${artifact_dir}"
+            rm "${artifact_dir}${zip_name}"
+            cd $artifact_dir
+            zip -r "../../recompressed/${zip_name}" ./*
+            cd ../..
           done
 
       - name: List recompressed artifacts
