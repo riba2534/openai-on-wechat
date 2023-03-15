@@ -93,7 +93,7 @@ jobs:
         run: ls -la ./artifacts
 
       - name: Release
-        uses: softprops/action-gh-release@v1.1.1
+        uses: softprops/action-gh-release@v1
         with:
           files:  "./artifacts/*.zip"
         env:
