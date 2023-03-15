@@ -92,9 +92,22 @@ jobs:
       - name: List downloaded artifacts
         run: ls -la ./artifacts
 
+      - name: Recompress Artifacts
+        run: |
+          mkdir -p recompressed
+          for dir in ./artifacts/*; do
+            if [ -d "$dir" ]; then
+              base=$(basename "$dir")
+              zip -j "recompressed/$base" "$dir"/*
+            fi
+          done
+
+      - name: List recompressed artifacts
+        run: ls -la ./recompressed
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files:  "./artifacts/*.zip"
+          files: "./recompressed/*.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
