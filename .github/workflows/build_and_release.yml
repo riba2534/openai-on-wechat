@@ -32,6 +32,8 @@ jobs:
           export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
           if [[ "${GOOS}" == "ubuntu" ]]; then
             export GOOS=linux
+          elif [[ "${GOOS}" == "macos" ]]; then
+            export GOOS=darwin
           fi
           export GOARCH=${{ matrix.arch }}
           export GOARM=7 # Set GOARM value if you need to build for ARMv7
@@ -47,6 +49,8 @@ jobs:
           export GOOS=$(echo ${{ matrix.os }} | awk -F'-' '{print $1}')
           if [[ "${GOOS}" == "ubuntu" ]]; then
             export GOOS=linux
+          elif [[ "${GOOS}" == "macos" ]]; then
+            export GOOS=darwin
           fi
           export GOARCH=${{ matrix.arch }}
           export BINARY_NAME=openai-on-wechat-${GOOS}-${GOARCH}
