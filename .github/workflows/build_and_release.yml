@@ -92,6 +92,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: "artifacts/*.zip"
+          files:  "./artifacts/*.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
