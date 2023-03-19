@@ -2,11 +2,9 @@ package ai
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/riba2534/openai-on-wechat/config"
-	"github.com/riba2534/openai-on-wechat/consts"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -51,37 +49,32 @@ func (c *Chat) Clear(user string) {
 	c.UserMessagesMap[user] = result
 }
 
-func (c *Chat) BuildMessage(user string) []openai.ChatCompletionMessage {
-	result := []openai.ChatCompletionMessage{SystemMessage}
-	for _, userMessage := range c.UserMessagesMap[user] {
+func (c *Chat) BuildMessage(userKey, systemPrompt string) []openai.ChatCompletionMessage {
+	result := []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: systemPrompt,
+		},
+	}
+	for _, userMessage := range c.UserMessagesMap[userKey] {
 		result = append(result, userMessage.Msg)
 	}
 	return result
 }
 
 // q 代表本次问题; user 代表用户key
-func GetSessionOpenAITextReply(q, user string) string {
+func GetSessionOpenAITextReply(ctx context.Context, q, userKey, model, systemPrompt string) string {
 	// 1. 清理过期消息
-	chat.Clear(user)
+	chat.Clear(userKey)
 	// 2. 添加本次对话上下文
-	chat.Add(NewUserMessage(user, openai.ChatCompletionMessage{
+	chat.Add(NewUserMessage(userKey, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleUser,
 		Content: q,
 	}))
 	// 3. 获取 OpenAI 回复
-	resp, err := textOpenAIClient.CreateChatCompletion(context.Background(),
-		openai.ChatCompletionRequest{
-			Model:    openai.GPT3Dot5Turbo,
-			Messages: chat.BuildMessage(user),
-		},
-	)
-	if err != nil {
-		log.Printf("openAIClient.CreateChatCompletion err=%+v\n", err)
-		return consts.ErrTips
-	}
-	reply := chatCompletionResponseHandle(resp)
+	reply := CreateChatCompletion(ctx, model, chat.BuildMessage(userKey, systemPrompt))
 	// 4. 把回复添加进上下文
-	chat.Add(NewUserMessage(user, openai.ChatCompletionMessage{
+	chat.Add(NewUserMessage(userKey, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleAssistant,
 		Content: reply,
 	}))

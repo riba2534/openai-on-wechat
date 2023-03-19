@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"io"
 	"log"
 	"net/http"
@@ -10,30 +11,43 @@ import (
 	"github.com/riba2534/openai-on-wechat/config"
 	"github.com/riba2534/openai-on-wechat/consts"
 	"github.com/riba2534/openwechat"
+	"github.com/sashabaranov/go-openai"
 )
 
 func MessageHandler(msg *openwechat.Message) {
 	if !msg.IsText() {
 		return
 	}
+	ctx := context.Background()
+	systemPrompt := config.Prompt
 	switch {
 	case strings.HasPrefix(msg.Content, config.C.WechatConfig.TextConfig.TriggerPrefix):
 		// 文字回复
 		if config.C.ContextConfig.SwitchOn {
-			go textSessionReplyHandler(msg)
+			go textSessionReplyHandler(ctx, msg, config.C.WechatConfig.TextConfig.TriggerPrefix, openai.GPT3Dot5Turbo, systemPrompt)
 		} else {
-			go textReplyHandler(msg)
+			go textReplyHandler(ctx, msg, config.C.WechatConfig.TextConfig.TriggerPrefix, openai.GPT3Dot5Turbo, systemPrompt)
 		}
 	case strings.HasPrefix(msg.Content, config.C.WechatConfig.ImageConfig.TriggerPrefix):
 		// 图片回复
-		go imageReplyHandler(msg)
+		go imageReplyHandler(ctx, msg, config.C.WechatConfig.ImageConfig.TriggerPrefix)
 	}
 }
 
-// 文字回复
-func textReplyHandler(msg *openwechat.Message) {
+// 文字回复处理
+func textReplyHandler(ctx context.Context, msg *openwechat.Message, prefix, model, systemPrompt string) {
 	log.Printf("[text] Request: %s", msg.Content) // 输出请求消息到日志
-	reply := ai.GetOpenAITextReply(strings.TrimSpace(strings.TrimPrefix(msg.Content, config.C.WechatConfig.TextConfig.TriggerPrefix)))
+	q := strings.TrimSpace(strings.TrimPrefix(msg.Content, prefix))
+	reply := ai.CreateChatCompletion(ctx, model, []openai.ChatCompletionMessage{
+		{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: systemPrompt,
+		},
+		{
+			Role:    openai.ChatMessageRoleUser,
+			Content: q,
+		},
+	})
 	log.Printf("[text] Response: %s", reply) // 输出回复消息到日志
 	_, err := msg.ReplyText(reply)
 	if err != nil {
@@ -42,8 +56,8 @@ func textReplyHandler(msg *openwechat.Message) {
 }
 
 // 带有上下文的文字回复
-func textSessionReplyHandler(msg *openwechat.Message) {
-	log.Printf("[text] Request: %s", msg.Content) // 输出请求消息到日志
+func textSessionReplyHandler(ctx context.Context, msg *openwechat.Message, prefix, model, systemPrompt string) {
+	log.Printf("[text session] Request: %s", msg.Content) // 输出请求消息到日志
 	user := func() string {
 		s := msg.FromUserName
 		if msg.IsSendBySelf() {
@@ -51,8 +65,9 @@ func textSessionReplyHandler(msg *openwechat.Message) {
 		}
 		return s
 	}()
-	reply := ai.GetSessionOpenAITextReply(strings.TrimSpace(strings.TrimPrefix(msg.Content, config.C.WechatConfig.TextConfig.TriggerPrefix)), user)
-	log.Printf("[text] Response: %s", reply) // 输出回复消息到日志
+	q := strings.TrimSpace(strings.TrimPrefix(msg.Content, prefix))
+	reply := ai.GetSessionOpenAITextReply(ctx, q, user, model, systemPrompt)
+	log.Printf("[text session] Response: %s", reply) // 输出回复消息到日志
 	_, err := msg.ReplyText(reply)
 	if err != nil {
 		log.Printf("msg.ReplyText Error: %+v", err)
@@ -60,9 +75,10 @@ func textSessionReplyHandler(msg *openwechat.Message) {
 }
 
 // 回复图片
-func imageReplyHandler(msg *openwechat.Message) {
+func imageReplyHandler(ctx context.Context, msg *openwechat.Message, prefix string) {
 	log.Printf("[image] Request: %s", msg.Content)
-	url := ai.CreateImage(strings.TrimSpace(strings.TrimPrefix(msg.Content, config.C.WechatConfig.ImageConfig.TriggerPrefix)))
+	q := strings.TrimSpace(strings.TrimPrefix(msg.Content, prefix))
+	url := ai.CreateImageReply(ctx, q)
 	if url == "" {
 		log.Printf("[image] Response: url 为空")
 		msg.ReplyText(consts.ErrTips)
